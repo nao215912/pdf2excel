@@ -4,7 +4,9 @@ import shutil
 import convert as convert
 from fastapi import (Depends,
                      FastAPI,
+                     Query,
                      HTTPException,
+                     Path,
                      UploadFile)
 from sqlalchemy.orm import Session
 from fastapi.responses import FileResponse
@@ -43,7 +45,9 @@ def convert_excel_files(excel_file_creates: list[models.ExcelFile]):
 
 
 @app.get("/excels")
-async def get_excels_info_from_db(offset: int, limit: int, db: Session = Depends(get_db)):
+async def get_excels_info_from_db(offset: int = Query(..., ge=0),
+                                  limit: int = Query(..., ge=0),
+                                  db: Session = Depends(get_db)):
     excel_files = cruds.get_excel_files(db, offset=offset, limit=limit)
     return {
         "total": len(excel_files),
@@ -76,7 +80,7 @@ async def create_upload_file(file: UploadFile, db: Session = Depends(get_db)):
     name, path = file.filename, f"/path/to/{file.filename}"
     os.remove(name)
 
-    excel_file = schemas.ExcelFilesCreate(path=path, name=name)
+    excel_file = schemas.ExcelFileCreate(path=path, name=name)
     if cruds.get_excel_file_by_path(db, excel_file.path):
         raise HTTPException(status_code=400, detail="A file with the same name already exists.")
     else:

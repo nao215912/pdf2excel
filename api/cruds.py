@@ -11,7 +11,7 @@ def get_excel_files(db: Session, offset: int = 0, limit: int = 100):
     return db.query(models.ExcelFile).offset(offset).limit(limit).all()
 
 
-def create_excel_file(db: Session, excel_file: schemas.ExcelFilesCreate):
+def create_excel_file(db: Session, excel_file: schemas.ExcelFileCreate):
     db_excel_file = models.ExcelFile(path=excel_file.path, name=excel_file.name)
     db.add(db_excel_file)
     db.commit()

@@ -6,7 +6,7 @@ class ExcelFilesBase(BaseModel):
     name: str
 
 
-class ExcelFilesCreate(ExcelFilesBase):
+class ExcelFileCreate(ExcelFilesBase):
     pass
 
 
