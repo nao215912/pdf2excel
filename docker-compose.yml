@@ -3,6 +3,7 @@ version: "3.3"
 services:
   # MySQL
   db:
+    platform: linux/x86_64
     container_name: "db"
     # path配下のDockerfile読み込み
     build: ./docker/mysql
@@ -21,15 +22,33 @@ services:
       - ./log/mysql:/var/log/mysql # ログの保存
     networks:
       - local-net
+    
+  s3:
+    image: minio/minio:RELEASE.2021-06-17T00-10-46Z
+    container_name: s3
+    env_file:
+      - env_file.env
+    volumes:
+      - ./volumes/minio:/data
+      - ./docker/minio/policies:/policies
+    ports:
+      - "9000:9000"
+    command: ["--compat", "server", "/data"]
+    networks:
+        - local-net
 
   # FastAPI
   api:
+    platform: linux/x86_64
+    container_name: api
+    env_file:
+      - env_file.env
     # db起動後に立ち上げる
     depends_on:
       - db
+      - s3
     command: >
       sh -c "sh ./wait_for_mysql.sh && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
-    container_name: "api"
     # path配下のDockerfile読み込み
     build: ./docker/api
     ports:

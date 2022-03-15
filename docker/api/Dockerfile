@@ -5,4 +5,4 @@ ADD requirements.txt .
 # requirements.txtにリストされたパッケージをインストールする
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-RUN apt-get update && apt-get -y install netcat
+RUN apt-get update && apt-get -y install netcat && apt-get -y install default-jre
